@@ -1,14 +1,21 @@
-//cpp file for student header, only contains the constructor
-#include "student.h"
+#include "Student.h"
+#include <iostream>
 #include <string>
+#include <vector>
 
 
+//initializing all variables
 Student::Student(){
-    for (int i = 0; i < MAX_PROGRAMS; i++){
-        programGrades[i] = -1; //no grades entered
-    }
-    for (int i = 0; i < MAX_TESTS; i++){
-        testGrades[i] = -1; //no grades entered
-    }
-    finalExam = -1.0; //no final exam grade entered
+    studentID = -1; //not yet initialized
+    programAvg = 0.0;
+    testAvg = 0.0;
+    finalSemesterGrade = 0.0;
+}
+
+void Student::setInitialGrades(int numPrograms, int numTests){
+    //setting vectors to -1 to indicate empty vectors or grades have not been entered
+    this->programGrades.assign(numPrograms, -1.0);
+    this->testGrades.assign(numTests, -1.0);
+    this->finalExamGrade = -1.0;
+
 }

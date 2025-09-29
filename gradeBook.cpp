@@ -1,8 +1,7 @@
 #include <iostream>
-#include <iomanip>
+#include "Gradebook.h"
+#include <vector>
 #include <string>
-#include "gradeBook.h"
-#include "student.h"
 using namespace std;
 
 
@@ -11,20 +10,103 @@ void clearBuffer(){
     cin.clear();
     cin.ignore(100, '\n');
 }
-//constructor
-GradeBook::GradeBook(){
-    numPrograms = 0; //starting with 0 programs
-    numTests = 0; //starting with 0 tests
-    numFinals = 0; //starting with 0 finals
-    programWeight = 0.0; //starting with 0 weight
-    testWeight = 0.0; //starting with 0 weight
-    finalWeight = 0.0; //starting with 0 weight
-    count = 0; //starting with 0 students
 
+Gradebook::Gradebook(){
+    numPrograms = 0;
+    numTests = 0;
+    numFinals = 0;
+    programWeight = 0;
+    testWeight = 0;
+    finalWeight = 0;
+}
+
+//creating user menu with all options
+void Gradebook::userMenu(){
+    cout << "\n\tGradebook Menu\n";
+    cout << "Please select an option Below\n";
+    cout << "S: Setup a new Semester\n" <<
+            "A: Add a student\n" <<
+            "P: Record programming assignment grade\n" <<
+            "T: Record test grade\n" <<
+            "F: Record final exam grade\n" <<
+            "C: Change grade\n" <<
+            "G: Calculate final grades\n" <<
+            "O: Output all grades\n" <<
+            "Q: Quit Program\n";
+}
+char Gradebook::userChoiceValidation(){
+    string input;
+    char choice;
+    char upperChoice;
+    vector<char> options = {'S','A','P','T','F','C','G','O','Q'};
+    while(true){
+        cout << "Please enter option: ";
+        getline(cin, input);
+        if (input.length() == 1 && isalpha(input[0])){
+            choice = input[0];
+            upperChoice = toupper(choice);
+
+            //check if the command is valid
+            bool validChoice = false;
+            for (char validOption : options){
+                if (upperChoice == validOption){
+                    validChoice = true;
+                    break;
+                }
+            }
+            if (validChoice){
+                return upperChoice;
+            } else {
+                cout << upperChoice << " is not a valid option\n";
+                cout << "\n";
+            }
+        } else {
+            cout << "Please enter a single letter. \n";
+            cout << "\n";
+        }
+    }
+}
+
+void Gradebook::functionSelection(char option){
+    switch (option)
+    {
+    case 'S':
+        setupSemester();
+        //cout << "Call setupSemester()\n";
+        break;
+    case 'A':
+        addStudent();
+        //cout << "Call addStudent()\n";
+        break;
+    case 'P':
+        //recordProgramGrade();
+        cout << "Call recordProgramGrade()\n";
+        break;
+    case 'T':
+        //recordTestGrade();
+        cout << "Call recordTestGrade()\n";
+        break;
+    case 'F':
+        //recordFinalExamGrade();
+        cout << "Call recordFinalExamGrade()\n";
+        break;
+    case 'C':
+        //changeGrade();
+        cout << "Call changeGrade()\n";
+        break;
+    case 'G':
+        //calculateFinalGrade();
+        cout << "Call calculateFinalGrade()\n";
+        break;
+    case 'O':
+        //displayGradebook();
+        cout << "Call displayGradebook()\n";
+        break;
+    }
 }
 
 //setting up gradebook for the semester
-void GradeBook::setupGradeBook(){
+void Gradebook::setupSemester(){
     int weightSum = 0.0;
 
     //prompt user num of programs + validation
@@ -152,79 +234,39 @@ void GradeBook::setupGradeBook(){
     }
 }
 
-//function to add a student
-bool GradeBook::addStudent(){
-    //checking if array that holds students is full or not
-    if (count >= MAX_STUDENTS){
-        cout << "Roster is full\n";
-        return false;
-    }
+void Gradebook::addStudent(){
+    //creating student class object
     Student s;
-    //asking user for students first and last name
-    cout << "Please enter students last name: ";
-    cin >> s.lastName;
+
+    //asking user to enter lastName
+    cout << "Please enter students full name\n" << "I.e. Doe, John: ";
+    getline(cin, s.lastName, ',');
+    getline(cin, s.firstName);
+    //cout << "Last Name: " << s.lastName;
+    //cout << "\nFirst Name: " << s.firstName;
     cout << "\n";
 
-    cout << "Please enter students first name: ";
-    cin >> s.firstName;
-    cout << "\n";
+    while (true){
+        cout << "Please enter students ID(1-9999): ";
+        cin >> s.studentID;
 
-    //asking user for student Id
-    while(true){
-        cout << "Please enter students ID number(between 1 - 9999): ";
-        cin >> s.id;
-        if (cin.fail() || s.id < 1 || s.id > 9999){
-            cout << "Please enter a valid ID between 1 and 9999!\n";
+        //checking if id is valid
+        if (cin.fail() || s.studentID < 1 || s.studentID > 9999){
+            cout << "Please enter a valid student ID: 1-9999\n";
             cout << "\n";
             clearBuffer();
         } else {
             break;
         }
     }
-    roster[count] = s;
-    ++count;
-    return true;
+
+    studentRoster.push_back(s);
+
 }
 
-//quick printing function to check if all got saved properly
-void GradeBook::printRoster(){
-    if (count == 0){
-        cout << "Roster is empty\n";
-        return;
+void Gradebook::printRoster(){
+    for (Student eachStudent : studentRoster){
+        cout << "Student Name: " << eachStudent.lastName << ", " << eachStudent.firstName << "\n";
+        cout << "Student ID: " << eachStudent.studentID << "\n";
     }
-    cout << "Current Roster\n";
-    cout << "Total students in roster: " << count << "\n";
-    cout << "\n";
-    for (int i = 0; i < count; i++){
-        cout << " " << roster[i].lastName << ", " << roster[i].firstName << " (ID " << roster[i].id << ")\n";
-    }
-    cout << endl;
-}
-//gradebook menu with various options
-void GradeBook::gradeBookMenu(){
-        cout << "Grade Book Options\n";
-        cout << "S: Set up new grade book" << setw(30) << "A: Add a student\n";
-        cout << "P: Record programming grade" << setw(32) << "T: Record test scores\n";
-        cout << "F: Record final grade" << setw(32) << "C: Change grade\n";
-        cout << "G: Calculate final grade" << setw(34) << "O: Output all grades\n";
-        cout << "Q: Quit program\n";
-}
-
-//validating user input choice
-char GradeBook::inputValidation(){
-    string input;
-    char choice;
-    while(true){
-        cout << "Please enter choose an option: ";
-        getline(cin, input);
-        if (input.length() == 1 && isalpha(input[0])){
-            choice = input[0];
-            break;
-        } else {
-            cout << "Please enter a single letter. \n";
-            cout << "\n";
-        }
-    }
-    char upperChoice = toupper(choice);
-    return upperChoice;
 }

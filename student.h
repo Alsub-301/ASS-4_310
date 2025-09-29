@@ -1,19 +1,22 @@
-//prototypes of all commands for gradebook
-//keeping all prototypes as void to create stubs
 #pragma once
 #include <string>
-
-const int MAX_PROGRAMS = 6;
-const int MAX_TESTS = 4;
+#include <vector>
 
 
-class Student
-{
+class Student {
     public:
+        //constructor for student class
         Student();
-        std::string lastName, firstName;
-        int id = 0;
-        double programGrades[MAX_PROGRAMS];
-        double testGrades[MAX_TESTS];
-        double finalExam;
+        std::string lastName, firstName; //both less or equal to 20 characters
+        int studentID; //between 1-9999
+        double programAvg;
+        double testAvg;
+        double finalSemesterGrade;
+        void setInitialGrades(int numPrograms, int numTests);
+    private:
+        //vectors to hold all grades for students
+        std::vector<double> programGrades;
+        std::vector<double> testGrades;
+        double finalExamGrade;
+
 };
