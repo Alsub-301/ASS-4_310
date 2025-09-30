@@ -22,19 +22,6 @@ void Student::setInitialGrades(int numPrograms, int numTests){
 }
 
 void Student::setProgramGrade(int programNum, double grade){
-    for (int i = 0; i < programGrades.size(); i++){
-        int programIndex = programNum - 1;
-        if (programIndex == i){
-            this->programGrades.at(programIndex) = grade;
-            std::cout << "Added " << grade << " to program " << programNum << "\n";
-        } else {
-            std::cout << "Program number not found!\n";
-        }
-    }
-
-    std::cout << "FOR TESTING PURPOSES\n" << "Printing out current program grade vector\n";
-    for (double tempGrade : programGrades){
-        std::cout << tempGrade << "\n";
-    }
-
+    int programIndex = programNum - 1;
+    programGrades.at(programIndex, grade);
 }

@@ -8,7 +8,6 @@ using std::cin;
 using std::string;
 using std::vector;
 
-Student stu;
 //THIS IS A MUST FIX FOR 09/30
 /*
     REMOVE GLOBAL STUDENT VARIABLE FROM setupSemester();- STUDENT stu
@@ -164,10 +163,6 @@ void Gradebook::setupSemester(){
         }
         clearBuffer();
     }
-    
-    //assigning numPrograms and numTests to student grade vectors for size
-    //NEW(09/29) - NEED TO REMOVE AND ADD TO ADDSTUDENT();
-    stu.setInitialGrades(numPrograms, numTests);
 
     //prompt user weight of programs + validation
     cout << "Please enter weights for programming assignments, tests and final exam\n";
@@ -257,34 +252,34 @@ void Gradebook::setupSemester(){
 void Gradebook::addStudent(){
     //NEW (09/29) ADD IN INITIALIZATION FUNCTION  PRIOR TO ADDING IN TO STUDENTROSTER
     //creating student class object
-
+    Student addStu;
     //asking user to enter lastName
     cout << "Please enter students full name\n" << "I.e. Doe, John: ";
-    getline(cin, stu.lastName, ',');
-    getline(cin, stu.firstName);
+    getline(cin, addStu.lastName, ',');
+    getline(cin, addStu.firstName);
     //cout << "Last Name: " << s.lastName;
     //cout << "\nFirst Name: " << s.firstName;
     cout << "\n";
 
     while (true){
         cout << "Please enter students ID(1-9999): ";
-        cin >> stu.studentID;
+        cin >> addStu.studentID;
 
         //checking if id is valid
-        if (cin.fail() || stu.studentID < 1 || stu.studentID > 9999){
+        if (cin.fail() || addStu.studentID < 1 || addStu.studentID > 9999){
             cout << "Please enter a valid student ID: 1-9999\n";
             cout << "\n";
         } else {
             clearBuffer();
             break;
         }
-
-        //NEED TO VERIFY BEFORE COMMTTING
-        stu.setInitialGrades(numPrograms, numTests);
         clearBuffer();
     }
-    studentRoster.push_back(stu); //possibly chanage since this will add to end of vector
+    //Initialize program/test vectors to -1(for not entered), vector size is based on user input of # of programming assignments and tests
+    addStu.setInitialGrades(numPrograms, numTests);
 
+    //add the new student into the student vector
+    studentRoster.push_back(addStu); //possibly chanage since this will add to end of vector
 }
 
 void Gradebook::printRoster(){
@@ -303,37 +298,71 @@ void Gradebook::recordProgramGrade(){
     double grade;
     if (numPrograms == 0){
         cout << "Please ensure there is at least 1 program assignment\n";
-    } else {
-        if (studentRoster.empty()){
-            cout << "Please create a student before proceeding\n";
-        } else {
-            //NEED TO BE ABLE TO SEARCH BASED ON STUDENTS FIRST/LAST NAME OR ID
-            //FOR NOW WILL ONLY CHECK FOR ID
-            cout << "Please enter student id: ";
-            cin >> pID;
-            for (Student tempID : studentRoster){
-                if (pID == tempID.studentID){
-                    cout << "Please enter in program number (1-" << numPrograms << "): ";
-                    cin >> programNum;
-                    if (cin.fail() || programNum > numPrograms){
-                        cout << "Please enter in a valid program number between 1-" << numPrograms << "\n";
-                    } else {
-                        cout << "Please enter in grade for program " << programNum << ": ";
-                        cin >> grade;
-                    }
-                    stu.setProgramGrade(programNum, grade);
-                }
-            }
+        return;
+    }
+    if (studentRoster.empty()){
+        cout << "Please create a student before proceeding\n";
+        return;
+    }
+    //NEED TO BE ABLE TO SEARCH BASED ON STUDENTS FIRST/LAST NAME OR ID
+    //FOR NOW WILL ONLY CHECK FOR ID
+    cout << "Please enter student id: ";
+    cin >> pID;
+    if(cin.fail()){
+        clearBuffer();
+        cout << "Please enter in a valid ID\n";
+        return;
+    }
 
-            /*cout << "Please enter in program number 1-" << numPrograms << ": ";
+    //checking if student is in roster
+    Student* stu = findStudentById(pID);
+    if (!stu){
+        cout << "Student could not be found!\n";
+        clearBuffer();
+        return;
+    }
+
+    //getting program number
+    cout << "Please enter in program assignment number (1-" << numPrograms << "): ";
+    cin >> programNum;
+    if (cin.fail() || programNum > numPrograms){
+        clearBuffer();
+        cout << "Please enter in a valid programming assignment\n";
+        return;
+    }
+
+    //getting grade for for programming assignment
+    cout << "Please enter in grade for program assignment number: ";
+    cin >> grade;
+    if (cin.fail()){
+        clearBuffer();
+        cout << "Invalid input\n";
+        return;
+    }
+
+    /*for (Student& tempID : studentRoster){
+        if (tempID.studentID == pID){
+            cout << "Please enter in program number (1-" << numPrograms << "): ";
             cin >> programNum;
-            if ( programNum > numPrograms || programNum < 0){
-                cout << "Please enter a valid program number!\n";
+            if (cin.fail() || programNum > numPrograms){
+                cout << "Please enter in a valid program number between 1-" << numPrograms << "\n";
+                return;
+            } else {
+                cout << "Please enter in grade for program " << programNum << ": ";
+                cin >> grade;
             }
+        }
+    }*/
+    stu->setProgramGrade(programNum, grade);
+    cout << "Recorded program " << programNum << " grade for " << stu->lastName << ", " << stu->firstName << ".\n";
+    clearBuffer();
+}
 
-            cout << "Please enter in grade for program " << programNum << ": ";
-            cin >> grade;*/
-            clearBuffer();
+Student* Gradebook::findStudentById(int id){
+    for (Student& s : studentRoster){
+        if (s.studentID == id){
+            return &s;
         }
     }
+    return nullptr;
 }

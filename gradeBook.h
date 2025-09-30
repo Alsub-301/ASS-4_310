@@ -31,6 +31,7 @@ class Gradebook{
         void printRoster();
         void quit();
         void clearBuffer();
+        Student* findStudentById(int);
     private:
         std::vector<Student> studentRoster; //list of students
         //check if grades have been entered
