@@ -12,9 +12,9 @@ class Gradebook{
         int numFinals; //either 0 or 1
 
         //will use standard 100% scale, not decimals
-        double programWeight;
-        double testWeight;
-        double finalWeight;
+        int programWeight;
+        int testWeight;
+        int finalWeight;
 
         //prototype functions to setup gradebook
         void userMenu(); //done
@@ -30,6 +30,7 @@ class Gradebook{
         void displayGradebook();
         void printRoster();
         void quit();
+        void clearBuffer();
     private:
         std::vector<Student> studentRoster; //list of students
         //check if grades have been entered

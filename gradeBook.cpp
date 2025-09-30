@@ -2,11 +2,24 @@
 #include "Gradebook.h"
 #include <vector>
 #include <string>
-using namespace std;
+//using specific
+using std::cout;
+using std::cin;
+using std::string;
+using std::vector;
+
+Student stu;
+//THIS IS A MUST FIX FOR 09/30
+/*
+    REMOVE GLOBAL STUDENT VARIABLE FROM setupSemester();- STUDENT stu
+    ADD INITIALIZATION FUNCTION IN addStudent(); - SETS STUDENT ROSTER WITH STUDENT INFORMATION + ADDS IN #PROGRAMS + #TESTS + #FINALS
+    RETURN STUDENTROSTER FROM addStudent() - THIS WILL THEN BE USED TO ADD IN THE GRADES BASED ON EACH STUDENT
+
+*/
 
 
 //clearing buffer function
-void clearBuffer(){
+void Gradebook::clearBuffer(){
     cin.clear();
     cin.ignore(100, '\n');
 }
@@ -51,7 +64,7 @@ char Gradebook::userChoiceValidation(){
             for (char validOption : options){
                 if (upperChoice == validOption){
                     validChoice = true;
-                    break;
+                    //break;
                 }
             }
             if (validChoice){
@@ -79,8 +92,8 @@ void Gradebook::functionSelection(char option){
         //cout << "Call addStudent()\n";
         break;
     case 'P':
-        //recordProgramGrade();
-        cout << "Call recordProgramGrade()\n";
+        recordProgramGrade();
+        //cout << "Call recordProgramGrade()\n";
         break;
     case 'T':
         //recordTestGrade();
@@ -106,8 +119,9 @@ void Gradebook::functionSelection(char option){
 }
 
 //setting up gradebook for the semester
+//VALIDATION - NEED TO CHECK IF SEMESTER IS ALREADY SETUP OR ELSE WILL OVERWRITE PREVIOUS DATA
 void Gradebook::setupSemester(){
-    int weightSum = 0.0;
+    int weightSum = 0;
 
     //prompt user num of programs + validation
     while(true){
@@ -116,10 +130,11 @@ void Gradebook::setupSemester(){
         if(cin.fail() || numPrograms < 0 || numPrograms > MAX_PROGRAMS){
             cout << "Please enter a number from 1 to 6\n";
             cout << "\n";
-            clearBuffer();
         } else {
+            clearBuffer();
             break;
         }
+        clearBuffer();
     }
 
     //prompt user num of test + validation
@@ -129,10 +144,11 @@ void Gradebook::setupSemester(){
         if(cin.fail() || numTests < 0 || numTests > MAX_TESTS){
             cout << "Please enter a number from 1 to 4\n";
             cout << "\n";
-            clearBuffer();
         } else {
+            clearBuffer();
             break;
         }
+        clearBuffer();
     }
 
     //prompt user num of finals + validation
@@ -142,21 +158,27 @@ void Gradebook::setupSemester(){
         if(cin.fail() || numFinals < 0 || numFinals > 1){
             cout << "Please enter a number from 0 to 1\n";
             cout << "\n";
-            clearBuffer();
         } else {
+            clearBuffer();
             break;
         }
+        clearBuffer();
     }
+    
+    //assigning numPrograms and numTests to student grade vectors for size
+    //NEW(09/29) - NEED TO REMOVE AND ADD TO ADDSTUDENT();
+    stu.setInitialGrades(numPrograms, numTests);
 
     //prompt user weight of programs + validation
     cout << "Please enter weights for programming assignments, tests and final exam\n";
     cout << "NOTE: All weights must not exceed 100%\n";
+    cout << "\n";
     while(true){
         //getting weight of programming assignments
         //if no programming assignments, weight will be 0%
         while(true){
             if (numPrograms == 0){
-                programWeight = 0.0; //if no programming assignments, then weight will be 0
+                programWeight = 0; //if no programming assignments, then weight will be 0
                 break;
             } else {
                 cout << "Please enter weight for programming assignments: ";
@@ -164,16 +186,17 @@ void Gradebook::setupSemester(){
                 if (cin.fail() || programWeight < 0 || programWeight > 100){
                     cout << "Please enter a vaild weight, from 0 to 100\n";
                     cout << "\n";
-                    clearBuffer();
                 } else {
+                    clearBuffer();
                     break;
                 }
             }
+            clearBuffer();
         }
         //weight of tests
         while(true){
             if (numTests == 0){ //if there are no tests then weight will be 0
-                testWeight = 0.0;
+                testWeight = 0;
                 break;
             } else {
                 cout << "Please enter weight for tests: ";
@@ -186,11 +209,12 @@ void Gradebook::setupSemester(){
                     break;
                 }
             }
+            clearBuffer();
         }
         //weight of final exam
         while(true){
             if (numFinals == 0){
-                finalWeight = 0.0; //if no final then weight will be 0
+                finalWeight = 0; //if no final then weight will be 0
                 break;
             } else {
                 cout << "Please enter weight for final exam: ";
@@ -203,6 +227,7 @@ void Gradebook::setupSemester(){
                     break;
                 }
             }
+            clearBuffer();
         }
         
         //calculating the sum all weights from programming assignments, tests, and final exam
@@ -213,54 +238,52 @@ void Gradebook::setupSemester(){
             cout << "Please enter weights again\n";
             cout << "Reminder that total weight from programming assignments + tests + final cannot exceed 100%\n";
             cout << "\n";
-        } else if(weightSum < 100){ //checking if weight is under 100%
-            cout << "Please ensure that all weights add up to 100%\n";
-            cout << "\n";
+        }else if(weightSum < 100){ //checking if weight is under 100%
+            if (numPrograms == 0 && numTests == 0 && numFinals == 0){
+                cout << "Please enter at least 1 programming assignment, 1 test or 1 final exam\n";
+                cout << "Please try to resetup the semester, command 'S'\n";
+                break;
+            } else {
+                cout << "Please ensure that all weights add up to 100%\n";
+                cout << "\n";
+            }
         } else {
-            //printing out summary of entries
-            /*
-                Next goal is to move this into a file and then save these entries into a file
-            */
-            cout << "\n\n";
-            cout << "--------------------------------------Grade Book Summary--------------------------------------\n";
-            cout << "Total number of programming assignments: " << numPrograms << "\n";
-            cout << "Total number of tests: " << numTests << "\n";
-            cout << "Total number of final exams: " << numFinals << "\n";
-            cout << "Weight for programming assignments: " << programWeight << "%\n";
-            cout << "Weight for tests: " << testWeight << "%\n";
-            cout << "Weight for final exam: " << finalWeight << "%\n";
-            break;
+            clearBuffer();
+            break;           
         }
     }
 }
 
 void Gradebook::addStudent(){
+    //NEW (09/29) ADD IN INITIALIZATION FUNCTION  PRIOR TO ADDING IN TO STUDENTROSTER
     //creating student class object
-    Student s;
 
     //asking user to enter lastName
     cout << "Please enter students full name\n" << "I.e. Doe, John: ";
-    getline(cin, s.lastName, ',');
-    getline(cin, s.firstName);
+    getline(cin, stu.lastName, ',');
+    getline(cin, stu.firstName);
     //cout << "Last Name: " << s.lastName;
     //cout << "\nFirst Name: " << s.firstName;
     cout << "\n";
 
     while (true){
         cout << "Please enter students ID(1-9999): ";
-        cin >> s.studentID;
+        cin >> stu.studentID;
 
         //checking if id is valid
-        if (cin.fail() || s.studentID < 1 || s.studentID > 9999){
+        if (cin.fail() || stu.studentID < 1 || stu.studentID > 9999){
             cout << "Please enter a valid student ID: 1-9999\n";
             cout << "\n";
-            clearBuffer();
         } else {
+            clearBuffer();
             break;
         }
-    }
 
-    studentRoster.push_back(s);
+        //NEED TO VERIFY BEFORE COMMTTING
+        stu.setInitialGrades(numPrograms, numTests);
+        clearBuffer();
+    }
+    studentRoster.push_back(stu); //possibly chanage since this will add to end of vector
 
 }
 
@@ -268,5 +291,49 @@ void Gradebook::printRoster(){
     for (Student eachStudent : studentRoster){
         cout << "Student Name: " << eachStudent.lastName << ", " << eachStudent.firstName << "\n";
         cout << "Student ID: " << eachStudent.studentID << "\n";
+    }
+}
+
+//recording program grade based on user program choice
+//TASK - need to create student roster before adding in grade
+//VALIDATION - need to check if student roster empty/created
+void Gradebook::recordProgramGrade(){
+    int programNum;
+    int pID;
+    double grade;
+    if (numPrograms == 0){
+        cout << "Please ensure there is at least 1 program assignment\n";
+    } else {
+        if (studentRoster.empty()){
+            cout << "Please create a student before proceeding\n";
+        } else {
+            //NEED TO BE ABLE TO SEARCH BASED ON STUDENTS FIRST/LAST NAME OR ID
+            //FOR NOW WILL ONLY CHECK FOR ID
+            cout << "Please enter student id: ";
+            cin >> pID;
+            for (Student tempID : studentRoster){
+                if (pID == tempID.studentID){
+                    cout << "Please enter in program number (1-" << numPrograms << "): ";
+                    cin >> programNum;
+                    if (cin.fail() || programNum > numPrograms){
+                        cout << "Please enter in a valid program number between 1-" << numPrograms << "\n";
+                    } else {
+                        cout << "Please enter in grade for program " << programNum << ": ";
+                        cin >> grade;
+                    }
+                    stu.setProgramGrade(programNum, grade);
+                }
+            }
+
+            /*cout << "Please enter in program number 1-" << numPrograms << ": ";
+            cin >> programNum;
+            if ( programNum > numPrograms || programNum < 0){
+                cout << "Please enter a valid program number!\n";
+            }
+
+            cout << "Please enter in grade for program " << programNum << ": ";
+            cin >> grade;*/
+            clearBuffer();
+        }
     }
 }

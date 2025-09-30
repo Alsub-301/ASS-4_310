@@ -12,7 +12,8 @@ class Student {
         double programAvg;
         double testAvg;
         double finalSemesterGrade;
-        void setInitialGrades(int numPrograms, int numTests);
+        void setInitialGrades(int, int);
+        void setProgramGrade(int, double);
     private:
         //vectors to hold all grades for students
         std::vector<double> programGrades;
